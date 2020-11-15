@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="google-site-verification" content="TZE0rZyIqLl10trYu3BWBWa1Vmz6HFwhb2OcNEK4u-s" />
+     <link rel="shortcut icon" href= /img/favicon.ico >
+    <title>
+        陈俊的个人博客
+    </title>
+    <meta name="description" content= The faintest ink is better than the best memory. >
+    <meta name="keywords" content= Blog,Hexo,Chenjun >
+    
+<link rel="stylesheet" href="/libs/highlight/styles/monokai-sublime.css">
+
+    
+<link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.2.0"></head>
+<body id="bodyx">
+    <div class="hd posts">
+    <a href="/index.html"><i class="fa fa-home
+ replay-btn" aria-hidden="true"></i></a>
+    <div class="post-title">
+        <p>
+            进程间通信-消息队列
+        </p>
+        <hr>
+    </div>
+    <div class="post-content">
+        <h1 id="消息队列API简介和示例"><a href="#消息队列API简介和示例" class="headerlink" title="消息队列API简介和示例"></a>消息队列API简介和示例</h1><ul>
+<li>key_t <code>ftok</code>(const char *pathname, int proj_id);</li>
+</ul>
+<p>需要包含的头文件：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#include &lt;sys&#x2F;types.h&gt;</span><br><span class="line">#include &lt;sys&#x2F;ipc.h&gt;</span><br></pre></td></tr></table></figure>
+
+<p>参数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pathname: 一个可访问的路径，如&#x2F;tmp</span><br><span class="line">proj_id:  是一个ASCII码，比如：&#39;a&#39;</span><br></pre></td></tr></table></figure>
+
+<p>返回值：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">-1: 失败</span><br><span class="line">否则: 返回已经创建的&#96;key_t&#96;的值</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>int <code>msgget</code>(key_t key, int msgflg);<br>需要包含的头文件：</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/ipc.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/msg.h&gt;</span></span></span><br></pre></td></tr></table></figure>
+
+<p>创建或者获得已创建的消息队列标识。<br>参数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">key: IPC_PRIVATE或者调用ftok的返回值。</span><br><span class="line">msgflg: IPC_CREAT或IPC_EXCL</span><br></pre></td></tr></table></figure>
+
+<p>返回值：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">失败返回: <span class="number">-1</span></span><br><span class="line">否则: 返回创建或获得的消息队列标识。</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>int <code>msgsnd</code>(int msqid, const void *msgp, size_t msgsz, int msgflg);</li>
+<li>ssize_t <code>msgrcv</code>(int msqid, void *msgp, size_t msgsz, long msgtyp, int msgflg);</li>
+</ul>
+<p>发送和接收函数：<br>包含头文件：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/ipc.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/msg.h&gt;</span></span></span><br></pre></td></tr></table></figure>
+
+
+
+<p>参数：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">msgp: 是一个结构体，格式如：</span><br><span class="line">           <span class="class"><span class="keyword">struct</span> <span class="title">msgbuf</span> &#123;</span></span><br><span class="line">               <span class="keyword">long</span> mtype;       <span class="comment">/* message type, must be &gt; 0 */</span></span><br><span class="line">               <span class="keyword">char</span> mtext[<span class="number">1</span>];    <span class="comment">/* message data */</span></span><br><span class="line">           &#125;;</span><br><span class="line">msgsz: 是mtext数组大小，注意它不包括mtype的大小。</span><br></pre></td></tr></table></figure>
+
+<h1 id="示例程序"><a href="#示例程序" class="headerlink" title="示例程序"></a>示例程序</h1><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;errno.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/ipc.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/msg.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/wait.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> ERR() do &#123; printf(<span class="meta-string">&quot;%s:%d errno=%d [%s]\n&quot;</span>, __func__, __LINE__, errno, strerror(errno)); exit(EXIT_FAILURE); &#125; while(0)</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> BUF_SZ 128</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">msgbuf</span> &#123;</span></span><br><span class="line">	<span class="keyword">long</span> mtype;       <span class="comment">/* message type, must be &gt; 0 */</span></span><br><span class="line">	<span class="keyword">char</span> mtext[BUF_SZ];    <span class="comment">/* message data */</span></span><br><span class="line">&#125; msgbuf;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">usage</span><span class="params">(<span class="keyword">char</span> *s)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">&quot;%s : \n&quot;</span>, s);</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">&quot;\t [process number]\n&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// create n process</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">create_n_process</span><span class="params">(<span class="keyword">int</span> n, <span class="keyword">pid_t</span> **pids)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">int</span> i = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">	*pids = (<span class="keyword">pid_t</span> *)<span class="built_in">malloc</span>(n * <span class="keyword">sizeof</span>(<span class="keyword">pid_t</span>));</span><br><span class="line">	<span class="keyword">if</span> (<span class="literal">NULL</span> == (*pids))</span><br><span class="line">		ERR();</span><br><span class="line"></span><br><span class="line">	<span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; n; ++i) &#123;</span><br><span class="line">		(*pids)[i] = fork();</span><br><span class="line">		<span class="keyword">if</span> ((*pids)[i] &lt; <span class="number">0</span>) &#123;</span><br><span class="line">			ERR();</span><br><span class="line">		&#125; <span class="keyword">else</span> <span class="keyword">if</span> ((*pids)[i] &gt; <span class="number">0</span>) &#123;</span><br><span class="line">			<span class="comment">/* parent */</span></span><br><span class="line">			<span class="keyword">continue</span>;</span><br><span class="line">		&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">			<span class="comment">/* child */</span></span><br><span class="line">			<span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// wait all child process exit</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">wait_for_children</span><span class="params">(<span class="keyword">int</span> n)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">int</span> i = <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; n; ++i) &#123;</span><br><span class="line">		waitpid(<span class="number">-1</span>, <span class="literal">NULL</span>, <span class="number">0</span>);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// ./a.out &lt;how many process to create&gt;</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> *argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">int</span> i = <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">int</span> ret = <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">int</span> msgq_id = <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">key_t</span> ftok_key = <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">int</span> process_num = <span class="number">0</span>;</span><br><span class="line">	<span class="keyword">pid_t</span> *pids = <span class="literal">NULL</span>;</span><br><span class="line">	msgbuf msg_buf;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (argc &lt; <span class="number">2</span>) &#123;</span><br><span class="line">		usage(argv[<span class="number">0</span>]);</span><br><span class="line">		<span class="built_in">exit</span>(EXIT_FAILURE);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	process_num = atoi(argv[<span class="number">1</span>]);</span><br><span class="line">	<span class="keyword">if</span> (process_num &lt;= <span class="number">0</span>) &#123;</span><br><span class="line">		ERR();</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="built_in">memset</span>(&amp;msg_buf, <span class="number">0</span>, <span class="keyword">sizeof</span>(msgbuf));</span><br><span class="line">	ftok_key = ftok(<span class="string">&quot;/tmp&quot;</span>, <span class="string">&#x27;c&#x27;</span>);</span><br><span class="line">	<span class="keyword">if</span> (ftok_key &lt; <span class="number">0</span>) &#123;</span><br><span class="line">		ERR();</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	msgq_id = msgget(ftok_key, IPC_EXCL);</span><br><span class="line">	<span class="keyword">if</span> (msgq_id &lt; <span class="number">0</span>) &#123;</span><br><span class="line">		msgq_id = msgget(ftok_key, IPC_CREAT | <span class="number">0660</span>);</span><br><span class="line">		<span class="keyword">if</span> (msgq_id &lt; <span class="number">0</span>)</span><br><span class="line">			ERR();</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	ret = create_n_process(process_num, &amp;pids);</span><br><span class="line">	<span class="keyword">if</span> (ret) &#123;</span><br><span class="line">		<span class="comment">/* child */</span></span><br><span class="line">		msg_buf.mtype = <span class="number">1</span>;</span><br><span class="line">		<span class="built_in">snprintf</span>(msg_buf.mtext, BUF_SZ, <span class="string">&quot;Hello, I am %d child!\n&quot;</span>, getpid());</span><br><span class="line">		ret = msgsnd(msgq_id, &amp;msg_buf, BUF_SZ, IPC_NOWAIT);</span><br><span class="line">		<span class="keyword">if</span> (ret &lt; <span class="number">0</span>) &#123;</span><br><span class="line">			ERR();</span><br><span class="line">		&#125;</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		<span class="comment">/* parent */</span></span><br><span class="line">		<span class="built_in">memset</span>(&amp;msg_buf, <span class="number">0</span>, <span class="keyword">sizeof</span>(msgbuf));</span><br><span class="line">		wait_for_children(process_num);</span><br><span class="line">		<span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; process_num; ++ i) &#123;</span><br><span class="line">			<span class="keyword">if</span> (BUF_SZ != msgrcv(msgq_id, &amp;msg_buf, BUF_SZ, <span class="number">1</span>, IPC_NOWAIT))</span><br><span class="line">				ERR();</span><br><span class="line">			<span class="built_in">printf</span>(<span class="string">&quot;%s&quot;</span>, msg_buf.mtext);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+    </div>
+
+    
+</div>
+    <div class="footer" id="footer">
+    <p><h4>Copyright © 2020 | Author: Chen Jun | Theme By <a class="theme-author" target="_blank" rel="noopener" href="https://github.com/Xunzhuo/hexo-theme-coder" style="font-size:14px; color: #969696">Coder</a></h4>
+    
+        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+        <span id="busuanzi_container_site_pv">Page Views: <span id="busuanzi_value_site_pv"></span></span>
+        <span class="post-meta-divider">|</span>
+        <span id="busuanzi_container_site_uv">Unique Visitors: <span id="busuanzi_value_site_uv"></span></span>
+    
+    <label class="el-switch el-switch-blue el-switch-sm" style="vertical-align: sub;">
+        <input type="checkbox" name="switch" id="update_style">
+        <span class="el-switch-style"></span>
+    </label>
+
+    <!--         <script type="text/javascript">
+    var cnzz_protocol = (("https:" == document.location.protocol) ? "https://" : "http://");
+    document.write(unescape("%3Cspan id='cnzz_stat_icon_1278548644'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "v1.cnzz.com/stat.php%3Fid%3D1278548644%26show%3Dpic1' type='text/javascript'%3E%3C/script%3E"));
+    </script> -->
+</p>
+</div>
+
+<input type="hidden" id="web_style" value="light">
+<input type="hidden" id="valine_appid" value="NOsswOncKgc8HOxqo9oxIWlX-gzGzoHsz">
+<input type="hidden" id="valine_appKey" value="z1FihjWEbS8uIfUQdmCtK7zz">
+
+<script src="/libs/jquery.min.js"></script>
+
+
+<script src="/libs/highlight/highlight.pack.js"></script>
+
+<script src='//cdn.jsdelivr.net/npm/valine@1.3.10/dist/Valine.min.js'></script>
+
+<script src="/js/js.js"></script>
+
+<style type="text/css">
+.v * {
+color: #698fca;
+}
+.v .vlist .vcard .vhead .vsys {
+color: #3a3e4a;
+}
+.v .vlist .vcard .vh .vmeta .vat {
+color: #638fd5;
+}
+.v .vlist .vcard .vhead .vnick {
+color: #6ba1ff;
+}
+.v a {
+color: #8696b1;
+}
+.v .vlist .vcard .vhead .vnick:hover {
+color: #669bfc;
+}
+</style>
+    <script type="text/javascript" color="173,174,173" opacity='1' zIndex="-2" count="99" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+</body>
+</html>
