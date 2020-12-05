@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="google-site-verification" content="TZE0rZyIqLl10trYu3BWBWa1Vmz6HFwhb2OcNEK4u-s" />
+     <link rel="shortcut icon" href= /img/favicon.ico >
+    <title>
+        陈俊的个人博客
+    </title>
+    <meta name="description" content= The faintest ink is better than the best memory. >
+    <meta name="keywords" content= Blog,Hexo,Chenjun >
+    
+<link rel="stylesheet" href="/libs/highlight/styles/monokai-sublime.css">
+
+    
+<link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.2.0"></head>
+<body id="bodyx">
+    <div class="hd posts">
+    <a href="/index.html"><i class="fa fa-home
+ replay-btn" aria-hidden="true"></i></a>
+    <div class="post-title">
+        <p>
+            正则表达式
+        </p>
+        <hr>
+    </div>
+    <div class="post-content">
+        <p>正则表达式是由一串字符和元字符构成的字符串，简称RE(Regular Expression)。正则表达式的主要功能是文本查询和字符串操作，他可以匹配文本的一个字符或字符集合。正则表达式完成数据过滤，将不满足正则定义的数据拒绝掉，剩下与正则匹配的数据。</p>
+<h1 id="基本正则表达式元字符集合与其意义："><a href="#基本正则表达式元字符集合与其意义：" class="headerlink" title="基本正则表达式元字符集合与其意义："></a>基本正则表达式元字符集合与其意义：</h1><table>
+<thead>
+<tr>
+<th align="center">符号</th>
+<th align="center">意义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">*</td>
+<td align="center">0个或多个在<code>*</code>字符之前的那个普通字符</td>
+</tr>
+<tr>
+<td align="center">.</td>
+<td align="center">匹配任意字符</td>
+</tr>
+<tr>
+<td align="center">^</td>
+<td align="center">匹配行首，或后面字符的非</td>
+</tr>
+<tr>
+<td align="center">$</td>
+<td align="center">匹配行尾</td>
+</tr>
+<tr>
+<td align="center">[]</td>
+<td align="center">匹配字符集合</td>
+</tr>
+<tr>
+<td align="center">\</td>
+<td align="center">转义符，屏蔽一个元字符的特殊意义</td>
+</tr>
+<tr>
+<td align="center">&lt;&gt;</td>
+<td align="center">精确匹配符号</td>
+</tr>
+<tr>
+<td align="center">{n}</td>
+<td align="center">匹配前面的字符出现n次</td>
+</tr>
+<tr>
+<td align="center">{n,}</td>
+<td align="center">匹配前面字符至少出现n次</td>
+</tr>
+<tr>
+<td align="center">{n,m}</td>
+<td align="center">匹配前面字符出现n~m次</td>
+</tr>
+</tbody></table>
+<h1 id="扩展的正则表达式元字符及意义"><a href="#扩展的正则表达式元字符及意义" class="headerlink" title="扩展的正则表达式元字符及意义"></a>扩展的正则表达式元字符及意义</h1><table>
+<thead>
+<tr>
+<th align="center">符号</th>
+<th align="center">意义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">?</td>
+<td align="center">匹配0个或1个在其之前的那个普通字符</td>
+</tr>
+<tr>
+<td align="center">+</td>
+<td align="center">匹配1个或多个在其之前的那个普通字符</td>
+</tr>
+<tr>
+<td align="center">()</td>
+<td align="center">表示一个字符集合或用在expr中</td>
+</tr>
+<tr>
+<td align="center">竖线</td>
+<td align="center">表示”或”，匹配一组可选的字符</td>
+</tr>
+</tbody></table>
+<h1 id="POSIX字符类"><a href="#POSIX字符类" class="headerlink" title="POSIX字符类"></a>POSIX字符类</h1><table>
+<thead>
+<tr>
+<th align="center">类名</th>
+<th align="center">意义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">[:upper:]</td>
+<td align="center">表示大写字母[A-Z]</td>
+</tr>
+<tr>
+<td align="center">[:lower:]</td>
+<td align="center">表示小写字母[a-z]</td>
+</tr>
+<tr>
+<td align="center">[:digit:]</td>
+<td align="center">表示阿拉伯数字[0~9]</td>
+</tr>
+<tr>
+<td align="center">[:alnum:]</td>
+<td align="center">表示大小写字母和阿拉伯数字[0<del>9a</del>zA~Z]</td>
+</tr>
+<tr>
+<td align="center">[:space:]</td>
+<td align="center">表示空格或Tab键</td>
+</tr>
+<tr>
+<td align="center">[:alpha:]</td>
+<td align="center">表示大小写字母[a<del>zA</del>Z]</td>
+</tr>
+<tr>
+<td align="center">[:cntrl:]</td>
+<td align="center">表示Ctrl键</td>
+</tr>
+<tr>
+<td align="center">[:graph:]或[:print:]</td>
+<td align="center">表示ASCII码33~126之间的字符</td>
+</tr>
+<tr>
+<td align="center">[:xdigit:]</td>
+<td align="center">表示16进制数字[0<del>9A</del>Fa~f]</td>
+</tr>
+</tbody></table>
+
+    </div>
+
+    
+</div>
+    <div class="footer" id="footer">
+    <p><h4>Copyright © 2020 | Author: Chen Jun | Theme By <a class="theme-author" target="_blank" rel="noopener" href="https://github.com/Xunzhuo/hexo-theme-coder" style="font-size:14px; color: #969696">Coder</a></h4>
+    
+        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+        <span id="busuanzi_container_site_pv">Page Views: <span id="busuanzi_value_site_pv"></span></span>
+        <span class="post-meta-divider">|</span>
+        <span id="busuanzi_container_site_uv">Unique Visitors: <span id="busuanzi_value_site_uv"></span></span>
+    
+    <label class="el-switch el-switch-blue el-switch-sm" style="vertical-align: sub;">
+        <input type="checkbox" name="switch" id="update_style">
+        <span class="el-switch-style"></span>
+    </label>
+
+    <!--         <script type="text/javascript">
+    var cnzz_protocol = (("https:" == document.location.protocol) ? "https://" : "http://");
+    document.write(unescape("%3Cspan id='cnzz_stat_icon_1278548644'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "v1.cnzz.com/stat.php%3Fid%3D1278548644%26show%3Dpic1' type='text/javascript'%3E%3C/script%3E"));
+    </script> -->
+</p>
+</div>
+
+<input type="hidden" id="web_style" value="light">
+<input type="hidden" id="valine_appid" value="NOsswOncKgc8HOxqo9oxIWlX-gzGzoHsz">
+<input type="hidden" id="valine_appKey" value="z1FihjWEbS8uIfUQdmCtK7zz">
+
+<script src="/libs/jquery.min.js"></script>
+
+
+<script src="/libs/highlight/highlight.pack.js"></script>
+
+<script src='//cdn.jsdelivr.net/npm/valine@1.3.10/dist/Valine.min.js'></script>
+
+<script src="/js/js.js"></script>
+
+<style type="text/css">
+.v * {
+color: #698fca;
+}
+.v .vlist .vcard .vhead .vsys {
+color: #3a3e4a;
+}
+.v .vlist .vcard .vh .vmeta .vat {
+color: #638fd5;
+}
+.v .vlist .vcard .vhead .vnick {
+color: #6ba1ff;
+}
+.v a {
+color: #8696b1;
+}
+.v .vlist .vcard .vhead .vnick:hover {
+color: #669bfc;
+}
+</style>
+    <script type="text/javascript" color="173,174,173" opacity='1' zIndex="-2" count="99" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+</body>
+</html>

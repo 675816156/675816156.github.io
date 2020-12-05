@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="google-site-verification" content="TZE0rZyIqLl10trYu3BWBWa1Vmz6HFwhb2OcNEK4u-s" />
+     <link rel="shortcut icon" href= /img/favicon.ico >
+    <title>
+        陈俊的个人博客
+    </title>
+    <meta name="description" content= The faintest ink is better than the best memory. >
+    <meta name="keywords" content= Blog,Hexo,Chenjun >
+    
+<link rel="stylesheet" href="/libs/highlight/styles/monokai-sublime.css">
+
+    
+<link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+<meta name="generator" content="Hexo 5.2.0"></head>
+<body id="bodyx">
+    <div class="hd posts">
+    <a href="/index.html"><i class="fa fa-home
+ replay-btn" aria-hidden="true"></i></a>
+    <div class="post-title">
+        <p>
+            hikey初始化和镜像下载
+        </p>
+        <hr>
+    </div>
+    <div class="post-content">
+        <p>详见：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/96boards/documentation/wiki/HiKey-Board-Recovery">https://github.com/96boards/documentation/wiki/HiKey-Board-Recovery</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/96boards/documentation/wiki/HiKeyUEFI">https://github.com/96boards/documentation/wiki/HiKeyUEFI</a></li>
+</ul>
+<h1 id="1、下载镜像"><a href="#1、下载镜像" class="headerlink" title="1、下载镜像"></a>1、下载镜像</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># hikey Android Open Source:相关镜像下载方式：</span></span><br><span class="line">wget http://builds.96boards.org/releases/hikey/linaro/binaries/latest/l-loader.bin</span><br><span class="line">wget http://builds.96boards.org/releases/hikey/linaro/binaries/latest/fip.bin</span><br><span class="line">wget http://builds.96boards.org/releases/hikey/linaro/binaries/latest/nvme.img</span><br><span class="line">wget http://builds.96boards.org/releases/hikey/linaro/binaries/latest/ptable-aosp-8g.img</span><br><span class="line">wget https://builds.96boards.org/releases/hikey/linaro/aosp/latest/boot_fat.uefi.img.tar.xz</span><br><span class="line"></span><br><span class="line">xz -d boot_fat.uefi.img.tar.xz</span><br><span class="line">tar -xf boot_fat.uefi.img.tar</span><br></pre></td></tr></table></figure>
+
+<h1 id="2、下载烧写工具"><a href="#2、下载烧写工具" class="headerlink" title="2、下载烧写工具"></a>2、下载烧写工具</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget https://raw.githubusercontent.com/96boards/burn-boot/master/hisi-idt.py</span><br></pre></td></tr></table></figure>
+
+<p><strong><em>注意：</em></strong> hikey烧写工具需要Python 2.7环境<br>在烧写之前，需要用条线帽短接几个管脚：</p>
+<p>就是SD卡插口以上的管脚，功能分别是：</p>
+<ul>
+<li>1-2：短接：功能是上电自动启动单板</li>
+<li>3-4：短接：功能是自举模式升级，就是烧写UEFI等镜像。</li>
+<li>5-6：短接：功能是在串口终端提供选择启动方式(SD卡启动、EMMC启动、USB启动)菜单，如果不选择10秒后会自动默认方式启动。</li>
+</ul>
+<p>关于西面四个管脚是UART0：</p>
+<ul>
+<li><code>管脚1：</code> 1.8V电压</li>
+<li><code>管脚2：</code> UART0_RX</li>
+<li><code>管脚3：</code> DGND接地</li>
+<li><code>管脚4：</code> UART0_TX</li>
+</ul>
+<p>如果是裸板，则需要短接<code>1-2</code>和<code>3-4</code>，运行如下命令烧写镜像：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">sudo python hisi-idt.py -d /dev/ttyUSB0 --img1=l-loader.bin</span><br><span class="line">sudo fastboot flash ptable ptable-aosp-8g.img</span><br><span class="line">sudo fastboot reboot</span><br><span class="line">sudo python hisi-idt.py -d /dev/ttyUSB0 --img1=l-loader.bin (again, remember ttyUSB* can change)</span><br><span class="line">sudo fastboot flash fastboot fip.bin</span><br><span class="line">sudo fastboot flash nvme nvme.img</span><br><span class="line">sudo fastboot flash boot boot_fat.uefi.img</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="启动顺序"><a href="#启动顺序" class="headerlink" title="启动顺序"></a>启动顺序</h1><ul>
+<li>Android Fastboot App</li>
+<li>grub on eMMC</li>
+<li>SD</li>
+</ul>
+<p><strong><em>注意：</em></strong> sdcard是最高优先级的启动方式，如果没有sdcard则从emmc启动，<code>5-6</code>短接才是Android Fastboot App最先启动<br>启动顺序是可以修改的，用如下命令修改：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">sudo fastboot oem bootdevice [emmc|sd]</span><br><span class="line">By default, SD card is the boot device. The boot flow is <span class="keyword">in</span> below.</span><br><span class="line">    a. If boot device is SD card.</span><br><span class="line">         1) If SD card is present, boot from SD card.</span><br><span class="line">         2) If SD card is _not_ present, boot from eMMC.</span><br><span class="line">    b. If boot device is eMMC.</span><br><span class="line">         Always boot from eMMC whether SD card is present or not. </span><br><span class="line">         It<span class="string">&#x27;s used when SD card is just mass storage device. </span></span><br><span class="line"><span class="string">         For this case, people always leave SD card in slot.</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="生成fastboot序列号"><a href="#生成fastboot序列号" class="headerlink" title="生成fastboot序列号"></a>生成fastboot序列号</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo fastboot oem serialno</span><br><span class="line">sudo fastboot oem serialno <span class="built_in">set</span> &#123;serialno string, 16 characters long&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="控制led灯"><a href="#控制led灯" class="headerlink" title="控制led灯"></a>控制led灯</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo fastboot oem led1 on</span><br><span class="line">sudo fastboot oem led1 off</span><br></pre></td></tr></table></figure>
+
+<h1 id="自动启动设置"><a href="#自动启动设置" class="headerlink" title="自动启动设置"></a>自动启动设置</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">By default, auto boot feature is enabled.</span><br><span class="line">Command to <span class="built_in">disable</span> auto boot:</span><br><span class="line"><span class="variable">$sudo</span> fastboot oem autoboot 0</span><br><span class="line">Command to <span class="built_in">enable</span> auto boot:</span><br><span class="line"><span class="variable">$sudo</span> fastboot oem autoboot 1</span><br></pre></td></tr></table></figure>
+
+<h1 id="怎么修改官方提供的boot-fat-uefi-img："><a href="#怎么修改官方提供的boot-fat-uefi-img：" class="headerlink" title="怎么修改官方提供的boot_fat.uefi.img："></a>怎么修改官方提供的boot_fat.uefi.img：</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p boot-fat</span><br><span class="line">sudo mount -o loop,rw,sync boot_fat.uefi.img boot-fat</span><br><span class="line"><span class="comment"># command to copy custom kernel &amp; dtb file into boot-fat</span></span><br><span class="line">sync</span><br><span class="line">sudo umount boot_fat.uefi.img</span><br></pre></td></tr></table></figure>
+
+<h1 id="kernel使用UART0作为log输出："><a href="#kernel使用UART0作为log输出：" class="headerlink" title="kernel使用UART0作为log输出："></a>kernel使用UART0作为log输出：</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Update kernel command line in grub.cfg</span></span><br><span class="line">linux (<span class="variable">$root</span>)/boot/Image console=tty0 console=ttyAMA0,115200 console=ttyAMA3,115200 root=/dev/disk/by-partlabel/system rootwait rw quiet efi=noruntime</span><br><span class="line"><span class="comment"># Don&#x27;t need to build kernel again.</span></span><br></pre></td></tr></table></figure>
+
+<h1 id="创建或修改GRUB里的启动项"><a href="#创建或修改GRUB里的启动项" class="headerlink" title="创建或修改GRUB里的启动项"></a>创建或修改GRUB里的启动项</h1><p>GRUB是操作系统的加载器，现在hikey的debian和aosp都是通过GRUB加载启动的，<br>如果你想运行自己的kernel，那么就要修改GRUB项。<br>grub.cfg存储在镜像boot_fat.uefi.img的/EFI/BOOT目录下，在grub.cfg里添加新项。<br>示例：仅仅修改kernel和dtb文件，任然使用initrd。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">menuentry <span class="string">&#x27;Custom Kernel&#x27;</span> &#123;</span><br><span class="line">    search.fs_label rootfs root</span><br><span class="line">    search.fs_label boot esp</span><br><span class="line">    linux (<span class="variable">$esp</span>)/Image console=tty0 console=ttyAMA3,115200 root=/dev/disk/by-partlabel/system rootwait rw efi=noruntime</span><br><span class="line">    initrd (<span class="variable">$root</span>)/boot/initrd.img</span><br><span class="line">    devicetree (<span class="variable">$esp</span>)/hi6220-hikey.dtb</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+    </div>
+
+    
+</div>
+    <div class="footer" id="footer">
+    <p><h4>Copyright © 2020 | Author: Chen Jun | Theme By <a class="theme-author" target="_blank" rel="noopener" href="https://github.com/Xunzhuo/hexo-theme-coder" style="font-size:14px; color: #969696">Coder</a></h4>
+    
+        <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+        <span id="busuanzi_container_site_pv">Page Views: <span id="busuanzi_value_site_pv"></span></span>
+        <span class="post-meta-divider">|</span>
+        <span id="busuanzi_container_site_uv">Unique Visitors: <span id="busuanzi_value_site_uv"></span></span>
+    
+    <label class="el-switch el-switch-blue el-switch-sm" style="vertical-align: sub;">
+        <input type="checkbox" name="switch" id="update_style">
+        <span class="el-switch-style"></span>
+    </label>
+
+    <!--         <script type="text/javascript">
+    var cnzz_protocol = (("https:" == document.location.protocol) ? "https://" : "http://");
+    document.write(unescape("%3Cspan id='cnzz_stat_icon_1278548644'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "v1.cnzz.com/stat.php%3Fid%3D1278548644%26show%3Dpic1' type='text/javascript'%3E%3C/script%3E"));
+    </script> -->
+</p>
+</div>
+
+<input type="hidden" id="web_style" value="light">
+<input type="hidden" id="valine_appid" value="NOsswOncKgc8HOxqo9oxIWlX-gzGzoHsz">
+<input type="hidden" id="valine_appKey" value="z1FihjWEbS8uIfUQdmCtK7zz">
+
+<script src="/libs/jquery.min.js"></script>
+
+
+<script src="/libs/highlight/highlight.pack.js"></script>
+
+<script src='//cdn.jsdelivr.net/npm/valine@1.3.10/dist/Valine.min.js'></script>
+
+<script src="/js/js.js"></script>
+
+<style type="text/css">
+.v * {
+color: #698fca;
+}
+.v .vlist .vcard .vhead .vsys {
+color: #3a3e4a;
+}
+.v .vlist .vcard .vh .vmeta .vat {
+color: #638fd5;
+}
+.v .vlist .vcard .vhead .vnick {
+color: #6ba1ff;
+}
+.v a {
+color: #8696b1;
+}
+.v .vlist .vcard .vhead .vnick:hover {
+color: #669bfc;
+}
+</style>
+    <script type="text/javascript" color="173,174,173" opacity='1' zIndex="-2" count="99" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+</body>
+</html>
